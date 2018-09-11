@@ -30,7 +30,8 @@ export default class Home extends Vue {
 
   public async getAccount() {
     const accountHttp = new AccountHttp();
-    accountHttp.getFromAddress(new Address(this.address)).subscribe(accountInfoWithMetaData => {
+    accountHttp.getFromAddress(new Address(this.address))
+      .subscribe((accountInfoWithMetaData) => {
       const balance = accountInfoWithMetaData.balance.balance / 1000;
       console.log(balance);
     });
