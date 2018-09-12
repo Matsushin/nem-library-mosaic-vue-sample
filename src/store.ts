@@ -8,13 +8,4 @@ export default new Vuex.Store({
   modules: {
     mosaic,
   },
-  state: {
-
-  },
-  mutations: {
-
-  },
-  actions: {
-
-  },
 });

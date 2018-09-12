@@ -10,7 +10,7 @@
         placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
       ></v-text-field>
       <v-flex>
-        <v-btn color="blue" class="white-text" @click="getAccount()">アカウント情報を取得する</v-btn>
+        <v-btn color="blue" class="white-text" @click="getMosaics()">アカウント情報を取得する</v-btn>
       </v-flex>
     </div>
     <div v-else>
@@ -133,7 +133,7 @@ export default class Mosaic extends Vue {
   private amount: number = 0;
   private validation: any[] = [];
 
-  private async getAccount() {
+  private async getMosaics() {
     await this.$store.dispatch('mosaic/getMosaics', this.address);
   }
 
