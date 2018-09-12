@@ -27,6 +27,9 @@
         </template>
       </v-data-table>
       <h2 class="mt-5">モザイク送金</h2>
+      <div v-for="(item, index) in validation" :key="index" class="errorLabel">
+        <div v-if="item!==true" class="red--text">{{ item }}</div>
+      </div>
       <v-text-field 
         label="送金先アドレス"
         v-model="toAddress"
@@ -53,6 +56,7 @@
         <v-text-field 
           label="送金量"
           v-model="amount"
+          type="number"
           arequired
         ></v-text-field>
       </v-flex>
@@ -94,7 +98,28 @@ import { mapGetters } from 'vuex'
         value: 'name'
       },
       { text: '残高', value: 'balance' }
-    ]
+    ],
+    rules: {
+      toAddrLimit: (value:string) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
+      toAddrInput: (value:string) => {
+        const pattern = /^[a-zA-Z0-9-]+$/
+        return pattern.test(value) || '送金先の入力が不正です'
+      },
+      privateKeyLimit: (value:string) => (value && (value.length === 64)) || '秘密鍵は64文字です。',
+      privateKeyInput: (value:string) => {
+        const pattern = /^[a-zA-Z0-9-]+$/
+        return pattern.test(value) || '秘密鍵の入力が不正です'
+      },
+      mosaicNameInput: (value:string) => {
+        const pattern = /^[a-zA-Z0-9-:]+$/
+        return pattern.test(value) || 'ネームスペース・モザイク名の入力が不正です'
+      },
+      amountLimit: (value:number) => (value >= 0) || '数量を入力してください',
+      amountInput: (value:string) => {
+        const pattern = /^[0-9.]+$/ //※ブログ上ではちゃんと表示されないため、実装の際はこのコメントアウトを外してください
+        return (pattern.test(value) && !isNaN(Number(value))) || '数量の入力が不正です'
+      },
+    }
   }),
   computed: {
     ...mapGetters({ mosaicList: 'mosaic/mosaicList', error: 'mosaic/error', message: 'mosaic/message' })
@@ -106,19 +131,38 @@ export default class Mosaic extends Vue {
   private privateKey: string = '';
   private mosaicName: string = '';
   private amount: number = 0;
+  private validation:Array<any> = []
 
   public async getAccount() {
     await this.$store.dispatch('mosaic/getMosaics', this.address);
   }
 
   public async sendMosaic() {
-    const payload = {
-      toAddress: this.toAddress,
-      privateKey: this.privateKey,
-      mosaicName: this.mosaicName,
-      amount: this.amount
+    if (this.isValidation() === true) {
+        const payload = {
+        toAddress: this.toAddress,
+        privateKey: this.privateKey,
+        mosaicName: this.mosaicName,
+        amount: this.amount
+        }
+        await this.$store.dispatch('mosaic/sendMosaic', payload);
     }
-    await this.$store.dispatch('mosaic/sendMosaic', payload);
+  }
+
+  isValidation(): Boolean {
+    this.validation = []
+    this.validation.push(this.$data.rules.toAddrLimit(this.toAddress))
+    this.validation.push(this.$data.rules.toAddrInput(this.toAddress))
+    this.validation.push(this.$data.rules.privateKeyLimit(this.privateKey))
+    this.validation.push(this.$data.rules.privateKeyInput(this.privateKey))
+    this.validation.push(this.$data.rules.mosaicNameInput(this.mosaicName))
+    this.validation.push(this.$data.rules.amountLimit(this.amount))
+    this.validation.push(this.$data.rules.amountInput(this.amount))
+    let isError:Boolean = false
+    this.validation.forEach((obj:any) => {
+      if (obj !== true) { isError = true }
+    })
+    return !isError
   }
 }
 </script>
