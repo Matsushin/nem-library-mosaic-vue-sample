@@ -21,7 +21,13 @@ export default {
     },
     mutations: {
         setMosaics (state, mosaics) {
-            state.mosaicLists = mosaics
+            for (const mosaic of mosaics) {
+                const name = `${mosaic.mosaicId.namespaceId}:${mosaic.mosaicId.name}`
+                state.mosaicLists.push({
+                    name: name,
+                    balance: mosaic.amount
+                })
+            }
         },
         setMessage (state, message) {
             state.message = message
@@ -34,7 +40,6 @@ export default {
         getMosaics({ commit }, address) {
             const accountOwnedMosaics = new AccountOwnedMosaicsService(new AccountHttp(), new MosaicHttp());
             accountOwnedMosaics.fromAddress(new Address(address)).subscribe(function (mosaics) {
-                console.log(mosaics);
                 commit('setMosaics', mosaics)
             });
         },
