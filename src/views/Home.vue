@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Mosaic from '@/components/Mosaic.vue'; 
+import Mosaic from '@/components/Mosaic.vue';
 
 @Component({
   components: {

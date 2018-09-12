@@ -86,43 +86,43 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 
 @Component({
   data: () => ({
     headers: [
-      { 
+      {
         text: 'モザイク',
         align: 'left',
         sortable: false,
-        value: 'name'
+        value: 'name',
       },
-      { text: '残高', value: 'balance' }
+      { text: '残高', value: 'balance' },
     ],
     rules: {
-      toAddrLimit: (value:string) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
-      toAddrInput: (value:string) => {
-        const pattern = /^[a-zA-Z0-9-]+$/
-        return pattern.test(value) || '送金先の入力が不正です'
+      toAddrLimit: (value: string) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
+      toAddrInput: (value: string) => {
+        const pattern = /^[a-zA-Z0-9-]+$/;
+        return pattern.test(value) || '送金先の入力が不正です';
       },
-      privateKeyLimit: (value:string) => (value && (value.length === 64)) || '秘密鍵は64文字です。',
-      privateKeyInput: (value:string) => {
-        const pattern = /^[a-zA-Z0-9-]+$/
-        return pattern.test(value) || '秘密鍵の入力が不正です'
+      privateKeyLimit: (value: string) => (value && (value.length === 64)) || '秘密鍵は64文字です。',
+      privateKeyInput: (value: string) => {
+        const pattern = /^[a-zA-Z0-9-]+$/;
+        return pattern.test(value) || '秘密鍵の入力が不正です';
       },
-      mosaicNameInput: (value:string) => {
-        const pattern = /^[a-zA-Z0-9-:]+$/
-        return pattern.test(value) || 'ネームスペース・モザイク名の入力が不正です'
+      mosaicNameInput: (value: string) => {
+        const pattern = /^[a-zA-Z0-9-:]+$/;
+        return pattern.test(value) || 'ネームスペース・モザイク名の入力が不正です';
       },
-      amountLimit: (value:number) => (value >= 0) || '数量を入力してください',
-      amountInput: (value:string) => {
-        const pattern = /^[0-9.]+$/ //※ブログ上ではちゃんと表示されないため、実装の際はこのコメントアウトを外してください
-        return (pattern.test(value) && !isNaN(Number(value))) || '数量の入力が不正です'
+      amountLimit: (value: number) => (value >= 0) || '数量を入力してください',
+      amountInput: (value: string) => {
+        const pattern = /^[0-9.]+$/; // ※ブログ上ではちゃんと表示されないため、実装の際はこのコメントアウトを外してください
+        return (pattern.test(value) && !isNaN(Number(value))) || '数量の入力が不正です';
       },
-    }
+    },
   }),
   computed: {
-    ...mapGetters({ mosaicList: 'mosaic/mosaicList', error: 'mosaic/error', message: 'mosaic/message' })
+    ...mapGetters({ mosaicList: 'mosaic/mosaicList', error: 'mosaic/error', message: 'mosaic/message' }),
   },
 })
 export default class Mosaic extends Vue {
@@ -131,38 +131,38 @@ export default class Mosaic extends Vue {
   private privateKey: string = '';
   private mosaicName: string = '';
   private amount: number = 0;
-  private validation:Array<any> = []
+  private validation: any[] = [];
 
-  public async getAccount() {
+  private async getAccount() {
     await this.$store.dispatch('mosaic/getMosaics', this.address);
   }
 
-  public async sendMosaic() {
+  private async sendMosaic() {
     if (this.isValidation() === true) {
         const payload = {
-        toAddress: this.toAddress,
-        privateKey: this.privateKey,
-        mosaicName: this.mosaicName,
-        amount: this.amount
-        }
+            toAddress: this.toAddress,
+            privateKey: this.privateKey,
+            mosaicName: this.mosaicName,
+            amount: this.amount,
+        };
         await this.$store.dispatch('mosaic/sendMosaic', payload);
     }
   }
 
-  isValidation(): Boolean {
-    this.validation = []
-    this.validation.push(this.$data.rules.toAddrLimit(this.toAddress))
-    this.validation.push(this.$data.rules.toAddrInput(this.toAddress))
-    this.validation.push(this.$data.rules.privateKeyLimit(this.privateKey))
-    this.validation.push(this.$data.rules.privateKeyInput(this.privateKey))
-    this.validation.push(this.$data.rules.mosaicNameInput(this.mosaicName))
-    this.validation.push(this.$data.rules.amountLimit(this.amount))
-    this.validation.push(this.$data.rules.amountInput(this.amount))
-    let isError:Boolean = false
-    this.validation.forEach((obj:any) => {
-      if (obj !== true) { isError = true }
-    })
-    return !isError
+  private isValidation(): boolean {
+    this.validation = [];
+    this.validation.push(this.$data.rules.toAddrLimit(this.toAddress));
+    this.validation.push(this.$data.rules.toAddrInput(this.toAddress));
+    this.validation.push(this.$data.rules.privateKeyLimit(this.privateKey));
+    this.validation.push(this.$data.rules.privateKeyInput(this.privateKey));
+    this.validation.push(this.$data.rules.mosaicNameInput(this.mosaicName));
+    this.validation.push(this.$data.rules.amountLimit(this.amount));
+    this.validation.push(this.$data.rules.amountInput(this.amount));
+    let isError: boolean = false;
+    this.validation.forEach((obj: any) => {
+      if (obj !== true) { isError = true; }
+    });
+    return !isError;
   }
 }
 </script>
