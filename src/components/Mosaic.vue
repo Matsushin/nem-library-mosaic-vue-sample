@@ -1,7 +1,7 @@
 <template>
   <div class="mosaic">
     <div v-if="mosaicList.length <= 0">
-      <h2>アカウント情報の取得</h2>
+      <h2>保有モザイク情報の取得</h2>
       <v-text-field 
         label="アドレス"
         v-model="address"
@@ -10,7 +10,7 @@
         placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
       ></v-text-field>
       <v-flex>
-        <v-btn color="blue" class="white-text" @click="getMosaics()">アカウント情報を取得する</v-btn>
+        <v-btn color="blue" class="white-text" @click="getMosaics()">保有しているモザイク情報を取得する</v-btn>
       </v-flex>
     </div>
     <div v-else>
